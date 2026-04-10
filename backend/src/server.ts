@@ -1,12 +1,11 @@
+import "dotenv/config";
 import express from "express";
-import type { Request, Response } from "express";
+import authRouter from "./routes/auth.route.js";
 
 const app = express();
 app.use(express.json());
 
-app.get("/", (req: Request, res: Response) => {
-  res.json("Hello Word from docker!!");
-});
+app.use("/api/auth", authRouter);
 
 app.listen(3001, () => {
   console.log(`The server is running on PORT:3001`);

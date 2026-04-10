@@ -4,6 +4,7 @@
     "module": "ESNext",        // ← ESM natif
     "moduleResolution": "bundler", // ← résolution moderne
     "esModuleInterop": true,
+    "types":["node"],
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
