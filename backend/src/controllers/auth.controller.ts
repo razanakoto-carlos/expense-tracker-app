@@ -2,13 +2,17 @@ import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { Request, Response } from "express";
-import "dotenv/config"
 
-const generateToken = (data:number) => {
- const token = jwt.sign({ data }, process.env.JWT_SECRET as string, {
+interface user {
+  id: number;
+  name: string;
+}
+
+const generateToken = ({ id, name }: user) => {
+  const token = jwt.sign({ id, name }, process.env.JWT_SECRET as string, {
     expiresIn: "7d",
   }) as string;
-  return token
+  return token;
 };
 
 export async function register(req: Request, res: Response) {
@@ -61,10 +65,9 @@ export async function login(req: Request, res: Response) {
       return res.status(401).json({ error: "Wrong password" });
     }
 
-    const token = generateToken(user,user)
+    const token = generateToken(user);
 
-    res.status(200).json({token:token});
-
+    res.status(200).json({ token: token });
   } catch (error) {
     return res.status(500).json({ error: "Something went wrong" });
   }

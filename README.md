@@ -86,17 +86,26 @@ npm run dev
 
 ```
 expense-tracker/
-├── expense_frontend/     # Application React + Vite
+|
+├── expense_backend/               # API REST Express + TypeScript
+│   ├── src/
+│   │   ├── controllers/           # Logique métier des routes
+│   │   ├── routes/                # Définition des endpoints API
+│   │   ├── middlewares/           # Middlewares Express (auth)
+│   │   ├── validators/            # Validation des données entrantes
+│   │   └── lib/                   # prisma
+│   ├── prisma/
+│   │   ├── schema.prisma          # Modèles de base de données
+│   │   └── migrations/            # Historique des migrations
+│   ├── .env                       # Variables d'environnement (non versionné)
+│   ├── .env.example               # Exemple de configuration
+│   └── Dockerfile
+│
+├── expense_frontend/              # Application React + Vite + TypeScript
 │   ├── src/
 │   └── Dockerfile
-├── expense_backend/      # API REST Express + TypeScript
-│   ├── src/
-│   └── Dockerfile
-└── docker-compose.yml
+│
+└── docker-compose.yml             # Orchestration des services
 ```
 
 ---
-
-## 📌 État du projet
-
-🚧 En cours de développement
