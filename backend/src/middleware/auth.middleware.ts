@@ -6,14 +6,13 @@ export const authMiddleware = (
   res: Response,
   next: NextFunction,
 ) => {
-  const headers = req.headers.authorization;
 
-  if (!headers || !headers.startsWith("Bearer")) {
+
+  if (!req.cookies.authToken || !req.headers.authorization) {
     return res.status(401).json("Not authorized");
   }
 
-  const token = headers.split(" ")[1];
-
+    const token = req.cookies.authToken || req.headers.authorization?.split(" ")[1];
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;

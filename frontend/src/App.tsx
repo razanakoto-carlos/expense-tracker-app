@@ -1,19 +1,17 @@
-import { useState } from 'react'
-
+import { Route, Routes } from "react-router-dom"
+import Layout from "./components/Layout"
+import Dashboard from "./pages/Dashboard"
+import Expense from "./pages/Expense"
+import Stat from "./pages/Stat"
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section>
-        <button
-          className="border bg-red-500"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-    </>
+    <Layout>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/expense" element={<Expense />} />
+        <Route path="/stat" element={<Stat />} />
+      </Routes>
+    </Layout>
   )
 }
 

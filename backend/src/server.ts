@@ -1,7 +1,8 @@
 import "dotenv/config";
 import express from "express";
-import type { Request, Response, NextFunction, Error } from "express";
+import type { Request, Response, NextFunction } from "express";
 import authRouter from "./routes/auth.route.js";
+import cookieParser from "cookie-parser";
 import categoryRouter from "./routes/category.route.js";
 import expenseRouter from "./routes/expense.route.js";
 import helmet from "helmet";
@@ -12,6 +13,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(helmet());
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
@@ -41,5 +43,5 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });

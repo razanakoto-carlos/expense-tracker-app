@@ -39,7 +39,17 @@ export async function register(req: Request, res: Response) {
       },
     });
 
-    res.status(201).json(user);
+    const token = generateToken(user);
+
+    // Set cookie on registration (auto-login)
+    res.cookie("authToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(201).json({ user: { id: user.id, name: user.name, email: user.email } });
   } catch (error) {
     return res.status(500).json({ error: "Something went wrong" });
   }
@@ -67,8 +77,29 @@ export async function login(req: Request, res: Response) {
 
     const token = generateToken(user);
 
-    res.status(200).json({ token: token });
+    // Set cookie instead of returning token
+    res.cookie("authToken", token, {
+      httpOnly: true,        // Can't access from JavaScript (prevents XSS)
+      secure: process.env.NODE_ENV === "production", // HTTPS only in production
+      sameSite: "strict",    // CSRF protection
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+    });
+
+    res.status(200).json({ 
+      message: "Login successful",
+      user: { id: user.id, name: user.name, email: user.email }
+    });
   } catch (error) {
     return res.status(500).json({ error: "Something went wrong" });
   }
+}
+
+export async function logout(req: Request, res: Response) {
+  res.clearCookie("authToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  res.status(200).json({ message: "Logout successful" });
 }
