@@ -1,10 +1,65 @@
-function ExpenseForm() {
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createExpense, getCategories } from "../api/expense.api";
+import { useState } from "react";
+
+function ExpenseForm({
+  setFormVisible,
+}: {
+  setFormVisible: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
+  const [formData, setFormData] = useState({
+    title: "",
+    amount: "",
+    categoryId: "",
+    date: new Date().toISOString().split("T")[0],
+  });
+
+  function handleForm(
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  const queryClient = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: createExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses"] }); // ← refetch
+      setFormData({
+        title: "",
+        amount: "",
+        categoryId: "",
+        date: new Date().toISOString().split("T")[0],
+      });
+      setFormVisible(false);
+    },
+  });
+
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: getCategories,
+  });
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    mutate({
+      title: formData.title,
+      amount: parseFloat(formData.amount),
+      date: formData.date,
+      categoryId: parseInt(formData.categoryId),
+    });
+  }
   return (
     <div className=" bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-6">
       <h4 className="text-sm font-semibold text-gray-800 mb-2">
         Nouvelle dépense
       </h4>
-      <form className="flex flex-col md:flex-row gap-4 items-end">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col md:flex-row gap-4 items-end"
+      >
         <div className="flex flex-col gap-1 flex-1">
           <label htmlFor="title" className="text-sm text-gray-600">
             Description
@@ -12,6 +67,9 @@ function ExpenseForm() {
           <input
             type="text"
             id="title"
+            name="title"
+            onChange={handleForm}
+            value={formData.title}
             placeholder="ex : Supermarché"
             className="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
           />
@@ -23,8 +81,11 @@ function ExpenseForm() {
             Montant
           </label>
           <input
+            value={formData.amount}
+            onChange={handleForm}
             type="number"
             id="amount"
+            name="amount"
             className="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
           />
         </div>
@@ -33,16 +94,32 @@ function ExpenseForm() {
             Catégorie
           </label>
           <select
+            value={formData.categoryId}
+            onChange={handleForm}
             id="category"
+            name="categoryId"
             className="px-3 py-1 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
-            <option value="">Sélectionner</option>
-            <option value="1">Alimentation</option>
-            <option value="2">Transport</option>
-            <option value="3">Loisirs</option>
-            <option value="4">Abonnements</option>
-            <option value="5">Autres</option>
+            <option>Sélectionner</option>
+            {categories?.map((cat: { id: number; name: string }) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
           </select>
+        </div>
+        <div className="flex flex-col gap-1 w-36">
+          <label htmlFor="date" className="text-sm text-gray-600">
+            Date
+          </label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date}
+            onChange={handleForm}
+            className="px-3 py-1 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+          />
         </div>
         <button
           type="submit"
@@ -50,7 +127,6 @@ function ExpenseForm() {
         >
           Ajouter
         </button>
-
       </form>
     </div>
   );

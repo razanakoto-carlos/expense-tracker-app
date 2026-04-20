@@ -1,10 +1,19 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Expense } from "../types";
+import { deleteExpense } from "../api/expense.api";
 
 type Expenses = {
   expenses: Expense[];
 };
 
 function ExpenseList({ expenses }: Expenses) {
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: deleteExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expenses"] });
+    },
+  });
   return (
     <div className="h-[calc(100vh-100px)] overflow-y-auto pr-2 space-y-2">
       {expenses.map((expense) => (
@@ -30,7 +39,10 @@ function ExpenseList({ expenses }: Expenses) {
             <p className="text-xs text-gray-500">
               {new Date(expense.date).toLocaleDateString()}
             </p>
-            <button className="text-gray-400 hover:text-red-500 transition cursor-pointer">
+            <button
+              onClick={() => mutate(expense.id)}
+              className="text-gray-400 hover:text-red-500 transition cursor-pointer"
+            >
               ✕
             </button>
           </div>

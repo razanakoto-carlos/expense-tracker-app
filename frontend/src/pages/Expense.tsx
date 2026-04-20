@@ -1,10 +1,15 @@
 import { useState } from "react";
 import ExpenseForm from "../components/ExpenseForm";
 import ExpenseList from "../components/ExpenseList";
-import { getExpenses } from "../data/Expense";
+import { useQuery } from "@tanstack/react-query";
+import { getExpenses } from "../api/expense.api";
 
 function Expense() {
-  const expenses = getExpenses();
+  const { data: expenses, isLoading } = useQuery({
+    queryKey: ["expenses"],
+    queryFn: getExpenses,
+  });
+
   const [formVisible, setFormVisible] = useState(false);
 
   return (
@@ -18,9 +23,14 @@ function Expense() {
           + Ajouter
         </button>
       </div>
-      {formVisible && <ExpenseForm />}
+      {formVisible && <ExpenseForm setFormVisible={setFormVisible}/>}
       <div className="flex-1 overflow-hidden">
-        <ExpenseList expenses={expenses} />
+        {isLoading && (
+          <div className="min-h-screen flex items-center justify-center">
+            <p className="text-sm text-gray-400">Loading...</p>
+          </div>
+        )}
+        {expenses && <ExpenseList expenses={expenses} />}
       </div>
     </div>
   );

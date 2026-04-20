@@ -9,6 +9,16 @@ interface user {
   name: string;
 }
 
+const CATEGORIES_PAR_DEFAUT = [
+  "Alimentation",
+  "Transport",
+  "Logement",
+  "Santé",
+  "Loisirs",
+  "Shopping",
+  "Autre",
+];
+
 const generateToken = ({ id, name }: user) => {
   const token = jwt.sign({ id, name }, process.env.JWT_SECRET as string, {
     expiresIn: "7d",
@@ -41,6 +51,13 @@ export async function register(req: Request, res: Response) {
     });
 
     const token = generateToken(user);
+
+    await prisma.category.createMany({
+      data: CATEGORIES_PAR_DEFAUT.map((name) => ({
+        name,
+        userId: user.id,
+      })),
+    });
 
     // Set cookie on registration (auto-login)
     res.cookie("authToken", token, {
@@ -112,7 +129,7 @@ export async function authentificate(req: AuthenticatedRequest, res: Response) {
     select: { id: true, email: true, name: true },
   });
 
-  if(!user){
+  if (!user) {
     res.status(404).json({ error: "User not found" });
     return;
   }
