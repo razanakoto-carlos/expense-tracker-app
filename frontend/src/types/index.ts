@@ -16,3 +16,18 @@ export type CategoryStat = {
   total: number;
   count: number;
 };
+
+export interface AuthCredentials {
+  email: string;
+  password: string;
+}
+
+export interface RegisterCredentials extends AuthCredentials {
+  name: string;
+}
+
+export interface AuthFormProps<T> {
+  title: string;
+  onSubmit: (data: T) => void;
+  withName?: boolean;
+}

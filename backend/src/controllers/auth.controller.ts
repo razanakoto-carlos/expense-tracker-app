@@ -2,6 +2,7 @@ import { prisma } from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import type { Request, Response } from "express";
+import type { AuthenticatedRequest } from "../middleware/auth.middleware";
 
 interface user {
   id: number;
@@ -49,7 +50,9 @@ export async function register(req: Request, res: Response) {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(201).json({ user: { id: user.id, name: user.name, email: user.email } });
+    res
+      .status(201)
+      .json({ user: { id: user.id, name: user.name, email: user.email } });
   } catch (error) {
     return res.status(500).json({ error: "Something went wrong" });
   }
@@ -77,17 +80,16 @@ export async function login(req: Request, res: Response) {
 
     const token = generateToken(user);
 
-    // Set cookie instead of returning token
     res.cookie("authToken", token, {
-      httpOnly: true,        // Can't access from JavaScript (prevents XSS)
-      secure: process.env.NODE_ENV === "production", // HTTPS only in production
-      sameSite: "strict",    // CSRF protection
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({ 
+    res.status(200).json({
       message: "Login successful",
-      user: { id: user.id, name: user.name, email: user.email }
+      user: { id: user.id, name: user.name, email: user.email },
     });
   } catch (error) {
     return res.status(500).json({ error: "Something went wrong" });
@@ -102,4 +104,18 @@ export async function logout(req: Request, res: Response) {
   });
 
   res.status(200).json({ message: "Logout successful" });
+}
+
+export async function authentificate(req: AuthenticatedRequest, res: Response) {
+  const user = await prisma.user.findUnique({
+    where: { id: req.user.id },
+    select: { id: true, email: true, name: true },
+  });
+
+  if(!user){
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  res.json({ user });
 }

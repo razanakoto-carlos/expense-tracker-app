@@ -1,5 +1,6 @@
 import { prisma } from "../lib/prisma";
 import type { Request, Response } from "express";
+import type { AuthenticatedRequest } from "../middleware/auth.middleware";
 
 export async function getCategories(req: Request, res: Response) {
   try {
@@ -10,7 +11,7 @@ export async function getCategories(req: Request, res: Response) {
   }
 }
 
-export async function createCategory(req: Request, res: Response) {
+export async function createCategory(req: AuthenticatedRequest, res: Response) {
   try {
     const { name } = req.body;
 
@@ -42,7 +43,7 @@ export async function createCategory(req: Request, res: Response) {
 
 export async function deleteCategory(req: Request, res: Response) {
   try {
-    const categoryId = parseInt(req.params.categoryId);
+    const categoryId = parseInt(req.params.categoryId as string);
 
     const existCategory = await prisma.category.findFirst({
       where: {
