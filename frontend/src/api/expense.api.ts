@@ -54,3 +54,17 @@ export async function deleteExpense(id: number) {
     method: "DELETE",
   });
 }
+
+export async function logout() {
+  return fetchApi(`${BASE_URL}/auth/logout`, {
+    method: "POST",
+  });
+}
+
+export async function getDashboard() {
+  return fetchApi(`${BASE_URL}/summary/dashboard`);
+}
+
+export async function getStat() {
+  return fetchApi(`${BASE_URL}/summary/stat`);
+}

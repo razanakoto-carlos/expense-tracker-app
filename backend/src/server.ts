@@ -5,6 +5,7 @@ import authRouter from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
 import categoryRouter from "./routes/category.route.js";
 import expenseRouter from "./routes/expense.route.js";
+import summaryRouter from "./routes/summary.route.js";
 import helmet from "helmet";
 import cors from "cors";
 
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/expense", expenseRouter);
+app.use("/api/summary", summaryRouter);
 
 // Health check
 app.get("/api/health", (_req: Request, res: Response) => {
