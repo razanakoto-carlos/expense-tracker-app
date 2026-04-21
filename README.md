@@ -13,12 +13,12 @@ Application web de gestion de dépenses personnelles, construite avec React et N
 
 ## ✨ Fonctionnalités
 
-- 🔐 Authentification sécurisée avec JWT (inscription / connexion)
-- ➕ Ajout et suppression de dépenses par catégorie
-- 📊 Dashboard avec résumé du mois en cours
-- 📈 Page Statistiques avec graphique en barres par catégorie
-- 🗂️ Gestion des catégories personnalisées
-- 🐳 Entièrement conteneurisé avec Docker
+- Authentification sécurisée avec JWT (inscription / connexion)
+- Ajout et suppression de dépenses par catégorie
+- Dashboard avec résumé du mois en cours
+- Page Statistiques avec graphique en barres par catégorie
+- Gestion des catégories personnalisées
+- Entièrement conteneurisé avec Docker
 
 ---
 
@@ -67,7 +67,7 @@ docker compose up
 **1. Cloner le projet**
 
 ```bash
-git clone https://github.com/votre-utilisateur/expense-tracker.git
+git clone https://github.com/razanakoto-carlos/expense-tracker-app.git
 cd expense-tracker
 ```
 
